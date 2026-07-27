@@ -130,7 +130,6 @@
     width:100%;
   }
   .ledger-action button:hover{background:var(--forest);}
-
   @media(max-width:700px){
     .ledger-row{grid-template-columns:1fr;gap:.3rem;padding:1.3rem 0;}
     .ledger-sku{order:1;}
@@ -276,8 +275,7 @@
     <a href="#" onclick="document.getElementById('chat-toggle').click();return false;">تحتاج مساعدة؟</a>
   </div>
 </nav>
-
-<section class="hero">
+ <section class="hero">
   <span class="eyebrow">STOCK LEDGER — 2026</span>
   <h1>قطع محدودة، مسجّلة بالقطعة الواحدة.</h1>
   <p>كل منتج عندنا متتبَّع لحظة بلحظة — لما يخلص، بنعرف، وأنت كمان تقدر تعرف.</p>
@@ -368,13 +366,13 @@ function renderLedger(){
     const low = p.stock <= 5;
     const row = document.createElement('div');
     row.className = 'ledger-row';
-    row.innerHTML = `
+    row.innerHTML = 
       <div class="ledger-sku">${p.sku}</div>
       <div class="ledger-name">${p.name}<small>${p.desc}</small></div>
       <div class="ledger-price">${p.price} ج.م</div>
       <div class="ledger-stock ${low?'stock-low':'stock-ok'}">${low? 'باقي '+p.stock : p.stock+' قطعة'}</div>
       <div class="ledger-action"><button onclick="openOrderModal('${p.sku}')">اطلب</button></div>
-    `;
+    ;
     list.appendChild(row);
   });
   document.getElementById('stock-count').textContent = PRODUCTS.length + " قطع";
@@ -383,7 +381,7 @@ renderLedger();
 
 /* ===== ORDER MODAL LOGIC ===== */
 let currentProduct = null;
-function openOrderModal(sku){
+  function openOrderModal(sku){
   currentProduct = PRODUCTS.find(p=>p.sku===sku);
   document.getElementById('order-title').textContent = "طلب: " + currentProduct.name;
   document.getElementById('order-sku').textContent = currentProduct.sku + " — " + currentProduct.price + " ج.م";
@@ -440,12 +438,12 @@ async function sendChat(){
   if(!text) return;
   const body = document.getElementById('chat-body');
 
-  body.innerHTML += `<div class="msg user">${text}</div>`;
+  body.innerHTML += <div class="msg user">${text}</div>;
   input.value = "";
   body.scrollTop = body.scrollHeight;
 
   const thinkingId = "thinking-" + Date.now();
-  body.innerHTML += `<div class="msg bot" id="${thinkingId}">...</div>`;
+  body.innerHTML += <div class="msg bot" id="${thinkingId}">...</div>;
   body.scrollTop = body.scrollHeight;
 
   try{
@@ -455,7 +453,7 @@ async function sendChat(){
       body: JSON.stringify({ message: text })
     });
     const data = await res.json();
-    document.getElementById(thinkingId).textContent = data.reply || data.output || "تمام، هرد عليك في أقرب وقت.";
+    document.getElementById(thinkingId).textContent = data.reply  data.output  "تمام، هرد عليك في أقرب وقت.";
   } catch(err){
     document.getElementById(thinkingId).textContent = "معلش، حصلت مشكلة في الاتصال بالبوت. تأكد إن رابط الـ Webhook مظبوط.";
   }
@@ -469,3 +467,4 @@ document.getElementById('chat-input').addEventListener('keydown', function(e){
 
 </body>
 </html>
+
