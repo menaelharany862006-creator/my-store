@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIELD &amp; FOLD — متجر ملابس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#F1EDE4;
+    --canvas-deep:#E8E2D4;
+    --ink:#201D1A;
+    --ink-soft:#4A453E;
+    --forest:#3F4A3B;
+    --rust:#8B5E3C;
+    --line:#D8D0BE;
+    --white:#FBFAF7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--canvas);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3{
+    font-family:'Fraunces',serif;
+    font-weight:500;
+    letter-spacing:-0.01em;
+  }
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:inherit;}
+
+  /* ===== NAV ===== */
+  nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1.5rem 6vw;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    background:var(--canvas);
+    z-index:50;
+  }
+  .logo{
+    font-family:'Fraunces',serif;
+    font-size:1.3rem;
+    font-weight:600;
+    letter-spacing:0.02em;
+  }
+  .nav-links{display:flex;gap:2rem;font-size:0.9rem;color:var(--ink-soft);}
+  .nav-links a{text-decoration:none;transition:color .2s;}
+  .nav-links a:hover{color:var(--forest);}
+
+  /* ===== HERO ===== */
+  .hero{
+    padding:7vw 6vw 5vw;
+    max-width:1100px;
+  }
+  .hero .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:0.8rem;
+    color:var(--rust);
+    letter-spacing:0.08em;
+    margin-bottom:1.2rem;
+    display:block;
+  }
+  .hero h1{
+    font-size:clamp(2.2rem,5.5vw,4rem);
+    line-height:1.08;
+    max-width:850px;
+    margin-bottom:1.5rem;
+  }
+  .hero p{
+    max-width:520px;
+    color:var(--ink-soft);
+    font-size:1.05rem;
+  }
+
+  /* ===== LEDGER (product list) ===== */
+  .ledger-section{padding:2vw 6vw 6vw;}
+  .ledger-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:0.8rem;
+    margin-bottom:0.5rem;
+  }
+  .ledger-head h2{font-size:1.5rem;}
+  .ledger-head span{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--ink-soft);}
+
+  .ledger-row{
+    display:grid;
+    grid-template-columns:90px 1fr 110px 90px 100px;
+    gap:1rem;
+    align-items:center;
+    padding:1.1rem 0;
+    border-bottom:1px solid var(--line);
+    opacity:0;
+    transform:translateY(12px);
+    animation:rise .5s ease forwards;
+  }
+  .ledger-row:nth-child(1){animation-delay:.05s;}
+  .ledger-row:nth-child(2){animation-delay:.12s;}
+  .ledger-row:nth-child(3){animation-delay:.19s;}
+  .ledger-row:nth-child(4){animation-delay:.26s;}
+  @keyframes rise{to{opacity:1;transform:translateY(0);}}
+
+  .ledger-sku{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--ink-soft);}
+  .ledger-name{font-weight:500;}
+  .ledger-name small{display:block;color:var(--ink-soft);font-weight:400;font-size:0.82rem;margin-top:.15rem;}
+  .ledger-price{font-family:'IBM Plex Mono',monospace;font-size:0.9rem;}
+  .ledger-stock{font-family:'IBM Plex Mono',monospace;font-size:0.8rem;}
+  .stock-ok{color:var(--forest);}
+  .stock-low{color:var(--rust);}
+  .ledger-action button{
+    background:var(--ink);
+    color:var(--white);
+    border:none;
+    padding:0.5rem 1rem;
+    font-family:'Inter',sans-serif;
+    font-size:0.82rem;
+    cursor:pointer;
+    transition:background .2s;
+    width:100%;
+  }
+  .ledger-action button:hover{background:var(--forest);}
+
+  @media(max-width:700px){
+    .ledger-row{grid-template-columns:1fr;gap:.3rem;padding:1.3rem 0;}
+    .ledger-sku{order:1;}
+    .ledger-name{order:2;font-size:1.05rem;}
+    .ledger-price{order:3;}
+    .ledger-stock{order:4;}
+    .ledger-action{order:5;margin-top:.5rem;}
+    .nav-links{display:none;}
+  }
+
+  /* ===== ORDER MODAL ===== */
+  .modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(32,29,26,0.55);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:100;
+    padding:1.5rem;
+  }
+  .modal-overlay.open{display:flex;}
+  .modal{
+    background:var(--white);
+    max-width:440px;
+    width:100%;
+    padding:2.2rem;
+    border:1px solid var(--line);
+  }
+  .modal h3{font-size:1.4rem;margin-bottom:0.3rem;}
+  .modal .modal-sub{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--ink-soft);margin-bottom:1.5rem;}
+  .field{margin-bottom:1rem;}
+  .field label{display:block;font-size:0.82rem;color:var(--ink-soft);margin-bottom:0.35rem;}
+  .field input{
+    width:100%;
+    padding:0.65rem 0.8rem;
+    border:1px solid var(--line);
+    background:var(--canvas);
+    font-family:'Inter',sans-serif;
+    font-size:0.95rem;
+  }
+  .field input:focus{outline:2px solid var(--forest);outline-offset:1px;}
+  .modal-actions{display:flex;gap:0.7rem;margin-top:1.5rem;}
+  .btn-primary,.btn-secondary{
+    flex:1;
+    padding:0.75rem;
+    font-family:'Inter',sans-serif;
+    font-size:0.9rem;
+    border:none;
+    cursor:pointer;
+  }
+  .btn-primary{background:var(--ink);color:var(--white);}
+  .btn-primary:hover{background:var(--forest);}
+  .btn-secondary{background:transparent;border:1px solid var(--line);color:var(--ink-soft);}
+  .form-status{font-size:0.85rem;margin-top:0.8rem;font-family:'IBM Plex Mono',monospace;}
+
+  /* ===== CHAT WIDGET ===== */
+  #chat-toggle{
+    position:fixed;
+    bottom:1.5rem;
+    left:1.5rem;
+    background:var(--ink);
+    color:var(--white);
+    border:none;
+    border-radius:100px;
+    padding:0.85rem 1.4rem;
+    font-family:'Inter',sans-serif;
+    font-size:0.9rem;
+    cursor:pointer;
+    box-shadow:0 6px 20px rgba(0,0,0,0.18);
+    z-index:80;
+  }
+  #chat-panel{
+    position:fixed;
+    bottom:5.2rem;
+    left:1.5rem;
+    width:320px;
+    max-width:88vw;
+    height:420px;
+    background:var(--white);
+    border:1px solid var(--line);
+    display:none;
+    flex-direction:column;
+    z-index:80;
+    box-shadow:0 12px 40px rgba(0,0,0,0.2);
+  }
+  #chat-panel.open{display:flex;}
+  .chat-head{
+    padding:1rem 1.2rem;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .chat-head h4{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:500;}
+  .chat-head button{background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ink-soft);}
+  .chat-body{
+    flex:1;
+    padding:1rem 1.2rem;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:0.6rem;
+  }
+  .msg{max-width:85%;padding:0.55rem 0.8rem;font-size:0.88rem;border-radius:4px;}
+  .msg.bot{background:var(--canvas-deep);align-self:flex-start;}
+  .msg.user{background:var(--ink);color:var(--white);align-self:flex-end;}
+  .chat-input-row{
+    display:flex;
+    border-top:1px solid var(--line);
+  }
+  .chat-input-row input{
+    flex:1;
+    border:none;
+    padding:0.8rem 1rem;
+    font-family:'Inter',sans-serif;
+    font-size:0.88rem;
+    background:transparent;
+  }
+  .chat-input-row input:focus{outline:none;}
+  .chat-input-row button{
+    background:var(--forest);
+    color:var(--white);
+    border:none;
+    padding:0 1.1rem;
+    cursor:pointer;
+    font-size:0.85rem;
+  }
+
+  footer{
+    padding:2.5rem 6vw;
+    border-top:1px solid var(--line);
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">FIELD &amp; FOLD</div>
+  <div class="nav-links">
+    <a href="#stock">القطع المتاحة</a>
+    <a href="#" onclick="document.getElementById('chat-toggle').click();return false;">تحتاج مساعدة؟</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <span class="eyebrow">STOCK LEDGER — 2026</span>
+  <h1>قطع محدودة، مسجّلة بالقطعة الواحدة.</h1>
+  <p>كل منتج عندنا متتبَّع لحظة بلحظة — لما يخلص، بنعرف، وأنت كمان تقدر تعرف.</p>
+</section>
+
+<section class="ledger-section" id="stock">
+  <div class="ledger-head">
+    <h2>الجرد المتاح الآن</h2>
+    <span id="stock-count">4 قطع</span>
+  </div>
+  <div id="ledger-list">
+    <!-- المنتجات بتتحط هنا من JS -->
+  </div>
+</section>
+
+<footer>
+  FIELD &amp; FOLD © 2026 — مخزون محدث تلقائيًا كل صباح.
+</footer>
+
+<!-- ===== ORDER MODAL ===== -->
+<div class="modal-overlay" id="order-overlay">
+  <div class="modal">
+    <h3 id="order-title">إتمام الطلب</h3>
+    <div class="modal-sub" id="order-sku"></div>
+    <form id="order-form">
+      <div class="field">
+        <label>الاسم بالكامل</label>
+        <input type="text" id="order-name" required>
+      </div>
+      <div class="field">
+        <label>رقم الموبايل</label>
+        <input type="tel" id="order-phone" required>
+      </div>
+      <div class="field">
+        <label>العنوان</label>
+        <input type="text" id="order-address" required>
+      </div>
+      <div class="field">
+        <label>الكمية</label>
+        <input type="number" id="order-qty" value="1" min="1" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeOrderModal()">إلغاء</button>
+        <button type="submit" class="btn-primary">تأكيد الطلب</button>
+      </div>
+      <div class="form-status" id="order-status"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== CHAT WIDGET ===== -->
+<button id="chat-toggle" onclick="toggleChat()">💬 اسألنا</button>
+<div id="chat-panel">
+  <div class="chat-head">
+    <h4>خدمة العملاء</h4>
+    <button onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-body" id="chat-body">
+    <div class="msg bot">أهلاً بيك 👋 اسألني عن أي منتج أو حالة الأوردر بتاعك.</div>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="اكتب رسالتك...">
+    <button onclick="sendChat()">إرسال</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   إعدادات الربط بـ n8n — عدّل الروابط دي بروابط الـ Webhooks بتاعتك
+   ============================================================ */
+const CONFIG = {
+  ORDER_WEBHOOK_URL: "https://mennastore.app.n8n.cloud/webhook/new-order",
+  CHATBOT_WEBHOOK_URL: "https://mennastore.app.n8n.cloud/webhook/chatbot"
+};
+
+/* بيانات المنتجات — لاحقًا ممكن تسحبها لايف من Google Sheets عن طريق n8n webhook للقراءة */
+const PRODUCTS = [
+  { sku:"FF-101", name:"قميص كتان فضفاض", desc:"قصة مريحة، رمادي فاتح", price:590, stock:14 },
+  { sku:"FF-102", name:"بنطلون تويل واسع", desc:"خصر مرتفع، بيج", price:720, stock:6 },
+  { sku:"FF-103", name:"جاكيت دنيم خفيف", desc:"غسيل حجري، أزرق داكن", price:980, stock:3 },
+  { sku:"FF-104", name:"تيشيرت قطن أساسي", desc:"قصة كلاسيك، أبيض عاجي", price:280, stock:22 },
+];
+
+function renderLedger(){
+  const list = document.getElementById('ledger-list');
+  list.innerHTML = "";
+  PRODUCTS.forEach(p=>{
+    const low = p.stock <= 5;
+    const row = document.createElement('div');
+    row.className = 'ledger-row';
+    row.innerHTML = `
+      <div class="ledger-sku">${p.sku}</div>
+      <div class="ledger-name">${p.name}<small>${p.desc}</small></div>
+      <div class="ledger-price">${p.price} ج.م</div>
+      <div class="ledger-stock ${low?'stock-low':'stock-ok'}">${low? 'باقي '+p.stock : p.stock+' قطعة'}</div>
+      <div class="ledger-action"><button onclick="openOrderModal('${p.sku}')">اطلب</button></div>
+    `;
+    list.appendChild(row);
+  });
+  document.getElementById('stock-count').textContent = PRODUCTS.length + " قطع";
+}
+renderLedger();
+
+/* ===== ORDER MODAL LOGIC ===== */
+let currentProduct = null;
+function openOrderModal(sku){
+  currentProduct = PRODUCTS.find(p=>p.sku===sku);
+  document.getElementById('order-title').textContent = "طلب: " + currentProduct.name;
+  document.getElementById('order-sku').textContent = currentProduct.sku + " — " + currentProduct.price + " ج.م";
+  document.getElementById('order-status').textContent = "";
+  document.getElementById('order-overlay').classList.add('open');
+}
+function closeOrderModal(){
+  document.getElementById('order-overlay').classList.remove('open');
+}
+
+document.getElementById('order-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const statusEl = document.getElementById('order-status');
+  statusEl.textContent = "بيتم الإرسال...";
+
+  const payload = {
+    customerName: document.getElementById('order-name').value,
+    phone: document.getElementById('order-phone').value,
+    address: document.getElementById('order-address').value,
+    product: currentProduct.name,
+    sku: currentProduct.sku,
+    quantity: document.getElementById('order-qty').value,
+    price: currentProduct.price,
+    timestamp: new Date().toISOString()
+  };
+
+  try{
+    const res = await fetch(CONFIG.ORDER_WEBHOOK_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    if(res.ok){
+      statusEl.style.color = "var(--forest)";
+      statusEl.textContent = "تم إرسال الطلب بنجاح ✓";
+      setTimeout(closeOrderModal, 1400);
+    } else {
+      throw new Error("bad response");
+    }
+  } catch(err){
+    statusEl.style.color = "var(--rust)";
+    statusEl.textContent = "حصل خطأ، جرب تاني (تأكد إن رابط الـ Webhook مظبوط).";
+  }
+});
+
+/* ===== CHAT WIDGET LOGIC ===== */
+function toggleChat(){
+  document.getElementById('chat-panel').classList.toggle('open');
+}
+
+async function sendChat(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  const body = document.getElementById('chat-body');
+
+  body.innerHTML += `<div class="msg user">${text}</div>`;
+  input.value = "";
+  body.scrollTop = body.scrollHeight;
+
+  const thinkingId = "thinking-" + Date.now();
+  body.innerHTML += `<div class="msg bot" id="${thinkingId}">...</div>`;
+  body.scrollTop = body.scrollHeight;
+
+  try{
+    const res = await fetch(CONFIG.CHATBOT_WEBHOOK_URL, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ message: text })
+    });
+    const data = await res.json();
+    document.getElementById(thinkingId).textContent = data.reply || data.output || "تمام، هرد عليك في أقرب وقت.";
+  } catch(err){
+    document.getElementById(thinkingId).textContent = "معلش، حصلت مشكلة في الاتصال بالبوت. تأكد إن رابط الـ Webhook مظبوط.";
+  }
+  body.scrollTop = body.scrollHeight;
+}
+
+document.getElementById('chat-input').addEventListener('keydown', function(e){
+  if(e.key === "Enter") sendChat();
+});
+</script>
+
+</body>
+</html>
